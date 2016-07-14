@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Spark-akka-http-couchbase-starter-kit by shiv4nsh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Spark-akka-http-couchbase-starter-kit</h1>
+      <h2 class="project-tagline">A starter REST Api application for Apache Spark and Couchbase</h2>
+      <a href="https://github.com/shiv4nsh/spark-akka-http-couchbase-starter-kit" class="btn">View on GitHub</a>
+      <a href="https://github.com/shiv4nsh/spark-akka-http-couchbase-starter-kit/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/shiv4nsh/spark-akka-http-couchbase-starter-kit/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="spark-couchbase-akka-http-starter-kit" class="anchor" href="#spark-couchbase-akka-http-starter-kit" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Spark-couchbase-akka-http-starter-kit</h1>
+
+<p>This guide walks you through the process of using <a href="http://spark.apache.org/">Apache Spark</a> and <a href="http://doc.akka.io/docs/akka/2.4.8/scala/http/">Akka-http</a> to build an application that stores data in and retrieves it from <a href="http://developer.couchbase.com/">Couchbase</a>, a document-based database.</p>
+
+<h2>
+<a id="what-youll-build" class="anchor" href="#what-youll-build" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>What you'll build</strong>
+</h2>
+
+<p>You will build a REST api that will run on your development machine. You will access it through your browser at an address like :</p>
+
+<blockquote>
+<p>http://localhost:8080/</p>
+</blockquote>
+
+<p>With this REST Api, you’ll be able to perform the basic CRUD (Create,Read,Update,Delete) operations.</p>
+
+<h3>
+<a id="create-route" class="anchor" href="#create-route" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Create Route:</h3>
+
+<blockquote>
+<p>http://localhost:8080/insert/name/shivansh/email/shiv4nsh@gmail.com</p>
+</blockquote>
+
+<h3>
+<a id="updateviakeyvaluepair-route" class="anchor" href="#updateviakeyvaluepair-route" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>UpdateViaKeyValuePair Route:</h3>
+
+<blockquote>
+<p>http://localhost:8080/updateViaKV/name/shivansh/email/shivansh@knoldus.com/id/user::267316c9-75a2-49d2-ae25-791d82b3d5fa</p>
+</blockquote>
+
+<h3>
+<a id="retrieve-via-document-id" class="anchor" href="#retrieve-via-document-id" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Retrieve Via Document id:</h3>
+
+<blockquote>
+<p>http://localhost:8080/getViaKV/id/user::267316c9-75a2-49d2-ae25-791d82b3d5fa</p>
+</blockquote>
+
+<h3>
+<a id="retrieve-via-view" class="anchor" href="#retrieve-via-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Retrieve via View:</h3>
+
+<blockquote>
+<p>http://localhost:8080/getViaView/name/shivansh</p>
+</blockquote>
+
+<h3>
+<a id="retrieve-via-n1ql" class="anchor" href="#retrieve-via-n1ql" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Retrieve via N1QL:</h3>
+
+<blockquote>
+<p>http://localhost:8080/getViaN1Ql/name/shivansh</p>
+</blockquote>
+
+<h3>
+<a id="delete-via-document-id" class="anchor" href="#delete-via-document-id" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Delete via Document id:</h3>
+
+<blockquote>
+<p>http://localhost:8080/delete/id/user::267316c9-75a2-49d2-ae25-791d82b3d5fa</p>
+</blockquote>
+
+<p>In this demonstration, you’ll be interacting with information about people: their name and their email. The Couchbase database will contain one bucket named "userBucket" that contains people. Each person document will be represented in JSON: </p>
+
+<p>You will be using<a href="http://spark.apache.org/">Apache Spark</a> , <a href="http://doc.akka.io/docs/akka/2.4.8/scala/http/">Akka-http</a>and  <a href="http://developer.couchbase.com/documentation/server/current/connectors/spark-1.0/spark-intro.html">Couchbase Spark Connector</a>for this project.</p>
+
+<h2>
+<a id="what-youll-need" class="anchor" href="#what-youll-need" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>What you'll need</strong>
+</h2>
+
+<ul>
+<li>15-30 minutes.</li>
+<li><a href="https://www.jetbrains.com/help/idea/2016.1/creating-and-running-your-scala-application.html">A Scala Code editor</a></li>
+<li><a href="http://www.scala-sbt.org/0.13/docs/Setup.html">Sbt</a></li>
+<li>
+<a href="https://www.lightbend.com/activator/download">Lightbend Activator</a>(follow the instructions to install activator and run your first activator application, if you have this activator thtn you do not need the sbt and the scala code editor as it is already provided with it.)</li>
+<li>
+<a href="http://www.couchbase.com/nosql-databases/downloads">Couchbase Server 4.5+</a>(follow the instructions to install Couchbase and create a bucket - this guide assumes you will have it running locally)</li>
+</ul>
+
+<h2>
+<a id="setup" class="anchor" href="#setup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Setup</h2>
+
+<h3>
+<a id="install-and-launch-couchbase" class="anchor" href="#install-and-launch-couchbase" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install and launch Couchbase</h3>
+
+<p>With your project set up, you can install and launch Couchbase.</p>
+
+<p>For whatever operating system you are using, instructions and downloads can be found at <a href="http://developer.couchbase.com/documentation/server/current/install/install-intro.html">How to install Couchbase?</a>.</p>
+
+<p>After you install Couchbase, launch it. You should see a webpage opening in your default browser allowing you to setup Couchbase</p>
+
+<h2>
+<a id="running-the-application" class="anchor" href="#running-the-application" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>Running the Application</strong>
+</h2>
+
+<p>You can run the application using the following command inside the code directory</p>
+
+<blockquote>
+<p>sbt run</p>
+</blockquote>
+
+<p>and if you are using the activator then use </p>
+
+<blockquote>
+<p>activator run</p>
+</blockquote>
+
+<h2>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><strong>Summary</strong>
+</h2>
+
+<p>Congratulations! You set up a Couchbase server and wrote a simple Spark-couchbase-akka-http application that stores a document in Couchbase and provides a basic REST api.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/shiv4nsh/spark-akka-http-couchbase-starter-kit">Spark-akka-http-couchbase-starter-kit</a> is maintained by <a href="https://github.com/shiv4nsh">shiv4nsh</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
